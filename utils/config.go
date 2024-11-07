@@ -30,3 +30,19 @@ func LoadConfigFile(cfgPath string, cfg Configuration) error {
 	log.Println("	INFO	unmarshal config: ", cfg)
 	return nil
 }
+
+func DecodeConfigFile(path string, config any) error {
+	buf, err := os.ReadFile(path)
+	if err != nil {
+		log.Printf("Read config file(%s) failed: %v.\n", path, err)
+		return err
+	}
+
+	if err = yaml.Unmarshal(buf, config); err != nil {
+		log.Printf("Unmarshal config file(%s) failed: %v.\n", path, err)
+		return err
+	}
+
+	log.Println("	INFO	unmarshal config: ", config)
+	return nil
+}
