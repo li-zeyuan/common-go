@@ -3,6 +3,7 @@ package minioclient
 import (
 	"context"
 
+	"github.com/li-zeyuan/common-go/mylogger"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"go.uber.org/zap"
@@ -13,12 +14,12 @@ type Client struct {
 	client *minio.Client
 }
 
-func New(conf *Config) (*Client, error) {
+func New(ctx context.Context, conf *Config) (*Client, error) {
 	minioClient, err := minio.New(conf.Endpoint, &minio.Options{
 		Creds: credentials.NewStaticV4(conf.AccessKeyID, conf.SecretAccessKey, ""),
 	})
 	if err != nil {
-		zap.L().Error("new minio client fail", zap.Error(err))
+		mylogger.Error(ctx, "new minio client fail", zap.Error(err))
 		return nil, err
 	}
 
