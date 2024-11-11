@@ -52,6 +52,30 @@ func (c *Client) CreateBucketIfNotExist(ctx context.Context) error {
 	return nil
 }
 
+func (c *Client) PresignedPutObject(ctx context.Context, objectKey string) (string, error) {
+	url, err := c.client.PresignedPutObject(ctx, c.conf.Bucket, objectKey, c.conf.PresignedPutExpiry)
+	if err != nil {
+		zap.L().Error("presigned put object fail", zap.Error(err))
+		return "", err
+	}
+
+	return url.String(), nil
+}
+
+func (c *Client) PresignedGetObject(ctx context.Context, objectKey string) (string, error) {
+	if len(objectKey) == 0 {
+		return "", nil
+	}
+
+	url, err := c.client.PresignedGetObject(ctx, c.conf.Bucket, objectKey, c.conf.PresignedGetExpiry, nil)
+	if err != nil {
+		zap.L().Error("presigned get object fail", zap.Error(err))
+		return "", err
+	}
+
+	return url.String(), nil
+}
+
 func (c *Client) Close() {
 	return
 }
