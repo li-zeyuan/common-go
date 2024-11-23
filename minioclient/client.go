@@ -1,7 +1,9 @@
 package minioclient
 
 import (
+	"bytes"
 	"context"
+	"io"
 
 	"github.com/li-zeyuan/common-go/mylogger"
 	"github.com/minio/minio-go/v7"
@@ -74,6 +76,36 @@ func (c *Client) PresignedGetObject(ctx context.Context, objectKey string) (stri
 	}
 
 	return url.String(), nil
+}
+
+func (c *Client) PutObject(ctx context.Context, objectKey string, buf []byte) error {
+	if len(buf) == 0 {
+		return nil
+	}
+
+	_, err := c.client.PutObject(ctx, c.conf.Bucket, objectKey, bytes.NewReader(buf), int64(len(buf)), minio.PutObjectOptions{})
+	if err != nil {
+		zap.L().Error("put object fail", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) GetObject(ctx context.Context, objectKey string) ([]byte, error) {
+	obj, err := c.client.GetObject(ctx, c.conf.Bucket, objectKey, minio.GetObjectOptions{})
+	if err != nil {
+		zap.L().Error("get object fail", zap.Error(err))
+		return nil, err
+	}
+
+	b, err := io.ReadAll(obj)
+	if err != nil {
+		zap.L().Error("read object fail", zap.Error(err))
+		return nil, err
+	}
+
+	return b, nil
 }
 
 func (c *Client) Close() {
