@@ -48,3 +48,22 @@ func (urls *StringArray) Scan(val interface{}) error {
 	}
 	return json.Unmarshal(b, urls)
 }
+
+type IntArray []int64
+
+func (of *IntArray) Value() (driver.Value, error) {
+	if of == nil {
+		return []byte(`[]`), nil
+	}
+
+	return json.Marshal(of)
+}
+
+func (of *IntArray) Scan(val interface{}) error {
+	b, ok := val.([]byte)
+	if !ok {
+		return errors.New("no byte type")
+	}
+
+	return json.Unmarshal(b, &of)
+}

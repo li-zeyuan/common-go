@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 
 	"github.com/li-zeyuan/common-go/mylogger"
 	"github.com/minio/minio-go/v7"
@@ -91,7 +92,7 @@ func (c *Client) CreateBucketIfNotExist(ctx context.Context) error {
 func (c *Client) PresignedPutObject(ctx context.Context, objectKey string) (string, error) {
 	url, err := c.client.PresignedPutObject(ctx, c.conf.Bucket, objectKey, c.conf.PresignedPutExpiry)
 	if err != nil {
-		zap.L().Error("presigned put object fail", zap.Error(err))
+		mylogger.Error(ctx, "presigned put object fail", zap.Error(err))
 		return "", err
 	}
 
@@ -103,7 +104,12 @@ func (c *Client) PublicGetObject(ctx context.Context, objectKey string) (string,
 		return "", nil
 	}
 
-	return filepath.Join(c.conf.Endpoint, c.conf.Bucket, objectKey), nil
+	url := filepath.Join(c.conf.Endpoint, c.conf.Bucket, objectKey)
+	if !strings.Contains(url, "http") {
+		url = "http://" + url
+	}
+
+	return url, nil
 }
 
 func (c *Client) PresignedGetObject(ctx context.Context, objectKey string) (string, error) {

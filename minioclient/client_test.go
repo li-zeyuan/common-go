@@ -53,7 +53,7 @@ func TestPublicGetObject(t *testing.T) {
 	}
 
 	cli := &Client{conf: conf}
-	url, err := cli.PublicGetObject(context.Background(), "ai_logo (1).jpg")
+	url, err := cli.PublicGetObject(context.Background(), "407953119733504.docx")
 	assert.Nil(t, err)
 	t.Log(url)
 }
