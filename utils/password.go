@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"regexp"
+
 	"github.com/li-zeyuan/common-go/mylogger"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -24,4 +26,13 @@ func ComparePwd(hashPwd string, pwd string) bool {
 	}
 
 	return true
+}
+
+func PwdFormat(pwd string) bool {
+	b, err := regexp.MatchString(`^[0-9a-zA-Z]*$`, pwd)
+	if err != nil {
+		return false
+	}
+
+	return b
 }
