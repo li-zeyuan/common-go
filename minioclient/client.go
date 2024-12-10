@@ -126,12 +126,15 @@ func (c *Client) PresignedGetObject(ctx context.Context, objectKey string) (stri
 	return url.String(), nil
 }
 
-func (c *Client) PutObject(ctx context.Context, objectKey string, buf []byte) error {
+func (c *Client) PutObject(ctx context.Context, objectKey string, buf []byte, options *minio.PutObjectOptions) error {
 	if len(buf) == 0 {
 		return nil
 	}
+	if options == nil {
+		options = new(minio.PutObjectOptions)
+	}
 
-	_, err := c.client.PutObject(ctx, c.conf.Bucket, objectKey, bytes.NewReader(buf), int64(len(buf)), minio.PutObjectOptions{})
+	_, err := c.client.PutObject(ctx, c.conf.Bucket, objectKey, bytes.NewReader(buf), int64(len(buf)), *options)
 	if err != nil {
 		zap.L().Error("put object fail", zap.Error(err))
 		return err
