@@ -112,6 +112,25 @@ func (c *Client) PublicGetObject(ctx context.Context, objectKey string) (string,
 	return url, nil
 }
 
+
+func (c *Client) PublicGetObjectList(ctx context.Context, objectKeys []string) ([]string, error) {
+	if len(objectKeys) == 0 {
+		return []string{}, nil
+	}
+
+	res := make([]string, 0, len(objectKeys))
+	for _, key := range objectKeys {
+		url := filepath.Join(c.conf.Endpoint, c.conf.Bucket, key)
+		if !strings.Contains(url, "http") {
+			url = "http://" + url
+		}
+
+		res = append(res, url)
+	}
+
+	return res, nil
+}
+
 func (c *Client) PresignedGetObject(ctx context.Context, objectKey string) (string, error) {
 	if len(objectKey) == 0 {
 		return "", nil
