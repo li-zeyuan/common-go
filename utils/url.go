@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"errors"
 	"net/url"
 	"path"
 
@@ -12,8 +11,7 @@ import (
 
 func Url2ObjectKey(ctx context.Context, rawURL string) (string, error) {
 	if len(rawURL) == 0 {
-		mylogger.Error(ctx, "empty raw url")
-		return "", errors.New("empty raw url")
+		return "", nil
 	}
 
 	uri, err := url.Parse(rawURL)
@@ -41,6 +39,5 @@ func Url2ObjectKeyList(ctx context.Context, rawURLs []string) ([]string, error) 
 		res = append(res, path.Base(uri.Path))
 	}
 
-
-	return res,nil
+	return res, nil
 }
