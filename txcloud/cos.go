@@ -3,6 +3,7 @@ package txcloud
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -154,4 +155,32 @@ func (c *Client) UserPutObjectTempKey(ctx context.Context, uid int64) (*sts.Cred
 	}
 
 	return res, nil
+}
+
+func (c *Client) GetImageInfo(ctx context.Context, name string) (*GetImageInfoResp, error) {
+	resp, err := c.httpCli.Get(fmt.Sprintf("%s?imageInfo", c.Key2Url(name)))
+	if err != nil {
+		mylogger.Error(ctx, "get open object fail", zap.Error(err))
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		mylogger.Error(ctx, "cos get invalid status code", zap.Int("status_code", resp.StatusCode), zap.String("name", name))
+		return nil, errNotOK
+	}
+
+	bs, err := io.ReadAll(resp.Body)
+	if err != nil {
+		mylogger.Error(ctx, "read object fail", zap.Error(err))
+		return nil, err
+	}
+
+	imgInfo := new(GetImageInfoResp)
+	if err = json.Unmarshal(bs, imgInfo); err != nil {
+		mylogger.Error(ctx, "json unmarshal image info fail", zap.Error(err))
+		return nil, err
+	}
+
+	return imgInfo, nil
 }

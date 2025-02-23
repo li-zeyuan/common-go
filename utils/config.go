@@ -27,7 +27,8 @@ func LoadConfigFile(cfgPath string, cfg Configuration) error {
 		log.Printf("verify config failed: %v.\n", err)
 		return err
 	}
-	log.Println("	INFO	unmarshal config: ", cfg)
+
+	log.Printf("	INFO	unmarshal config: %+v", cfg)
 	return nil
 }
 

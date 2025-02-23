@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/li-zeyuan/common-go/mylogger"
-	"github.com/redis/go-redis"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
